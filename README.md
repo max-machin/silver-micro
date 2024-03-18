@@ -58,3 +58,21 @@ root@debian:~$ systemctl status mariadb --no-pager -l
 ```console
 root@debian:~$ apt install php libapache2-mod-php
 ```
+
+ Créer un nouveau fichier texte :
+ ```console
+root@debian:~$ nano /var/www/html/info.php
+```
+
+Ajouter la ligne suivante dans le fichier : 
+```console
+<?php phpinfo(); ?>
+```
+Appuyer sur Ctrl + X, ensuite Y puis Entrée pour écrire et enregistrer le fichier.
+
+Accèder à la page PHP depuis : 
+```console
+http://your_server_ip/info.php
+or
+http://your_domain/info.php
+ 
