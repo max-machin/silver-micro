@@ -27,7 +27,7 @@ Mise à jour des paquets :
 root@debian:~$ apt update
 ```
 
-### Stack LAMP
+## Stack LAMP
 #### 1. Installer Apache 
 ```console
 root@debian:~$ apt install apache2
