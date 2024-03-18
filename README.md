@@ -49,5 +49,8 @@ root@debian:~$ systemctl start mariadb
 root@debian:~$ systemctl enable mariadb
 ```
 
-
+Check la status du service : 
+```console
+root@debian:~$ systemctl status mariadb --no-pager -l
+```
 
