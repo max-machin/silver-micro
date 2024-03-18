@@ -22,7 +22,7 @@ L'utilisateur devrait désormais être root :
 root@debian:~$ 
 ```
 
-Mise à jour de l'index des paquets :
+Mise à jour des paquets :
 ```console
 root@debian:~$ apt update
 ```
