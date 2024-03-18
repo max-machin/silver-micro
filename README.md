@@ -77,7 +77,13 @@ or
 http://your_domain/info.php
 ```
 
-Pour récupérer l'ip serveur de votre machine, il est possible depuis le terminal de commande de la machine virtuelle d'installer la paquet : 
+Pour récupérer l'ip serveur de votre machine, il est possible depuis le terminal de commande de la machine virtuelle d'installer le paquet : 
 ```console
 root@debian:~$ apt install net-tools
+```
+
+Puis run :
+```console
 ifconfig
+```
+
