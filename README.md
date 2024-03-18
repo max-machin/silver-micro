@@ -54,3 +54,7 @@ Check la status du service :
 root@debian:~$ systemctl status mariadb --no-pager -l
 ```
 
+#### 3. Installer PHP
+```console
+root@debian:~$ apt install php libapache2-mod-php
+```
