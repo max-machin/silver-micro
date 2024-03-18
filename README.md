@@ -1,2 +1,7 @@
 # silver-micro
-VM dockerisée
+Projet de machine virtuelle dockerisée. 
+Hyperviseur de type 2 : VMware
+Distribution : Debian
+
+
+
