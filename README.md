@@ -14,6 +14,9 @@ Installer le logiciel de virtualisation VMware workstation player : https://www.
 
 Une fois la machine virtuelle monter et démarrer, ouvrir un terminal de commande.   
 Pour des questions de permissions, exécuter la commande suivante : ( cela évite le nécessité de "sudo" avant chacune des commandes à effectuer )  
+```console
+max123@debian:~$ sudo -i 
+```
 
 
 
