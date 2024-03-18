@@ -3,8 +3,7 @@ Projet de machine virtuelle dockerisée.
 Hyperviseur de type 2 : VMware  
 Distribution : Debian 12
 
-## Stack LAMP
-### Installation 
+## Installation de base 
 1. Choisir un hyperviseur de type 2 (cet exemple utilise VMware)  
 Installer le logiciel de virtualisation VMware workstation player : https://www.vmware.com/products/workstation-player.html
 
@@ -23,11 +22,12 @@ L'utilisateur devrait désormais être root :
 root@debian:~$ 
 ```
 
-La prochaine étape consiste à vérifier la présence du gestionnaire de paquet ( sinon l'installer sur la machine virtuelle )  
-Si le gestionnaire de paquet est présent, mettre à jour les paquets lors de la première initialisation de la machine : 
+Mise à jour de l'index des paquets :
 ```console
 root@debian:~$ apt update
 ```
+
+### Stack LAMP
 
 
 
