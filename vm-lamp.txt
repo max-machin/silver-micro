@@ -1,0 +1,62 @@
+Prérequis avant mise en place d'une stack LAMP : 
+1. Installation de Vmware ( ou VMware déjà installé ).
+2. Créer une machine virtuelle à partir du fichier iso de distribution debian.
+
+Une fois la machine virtuelle créer et démarrer. Lancer un shell depuis cette dernière : 
+
+Afin d'éviter des problèmes de permissions, il peut être utile d'utiliser la commande : 
+max123@debian:~$ sudo -i 
+
+Mise en place du stack LAMP :
+ 
+1. Installer Apache
+root@debian:~$ apt install apache2
+
+activer et démarrer le service :
+root@debian:~$ systemctl enable --now apache2
+root@debian:~$ systemctl start apache2
+
+2. Installer MariaDb
+root@debian:~$ apt install mariadb-server
+
+Démarrer et activer le service mariaDb :
+root@debian:~$ systemctl start mariadb
+root@debian:~$ systemctl enable mariadb
+
+Check la status du service :
+root@debian:~$ systemctl status mariadb --no-pager -l
+
+3. Installer PHP
+root@debian:~$ apt install php libapache2-mod-php
+
+Créer un nouveau fichier texte :
+root@debian:~$ nano /var/www/html/info.php
+
+Ajouter la ligne suivante dans le fichier :
+<?php phpinfo(); ?>
+
+Appuyer sur Ctrl + X, ensuite Y puis Entrée pour écrire et enregistrer le fichier.
+
+Accèder à la page PHP depuis :
+
+http://your_server_ip/info.php
+or
+http://your_domain/info.php
+
+Pour récupérer l'ip serveur de votre machine, il est possible depuis le terminal de commande de la machine virtuelle d'installer le paquet :
+root@debian:~$ apt install net-tools
+
+Puis run :
+ifconfig
+
+L'adresse ip cible est l'adresse inet :
+
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.142.128  netmask 255.255.255.0  broadcast 192.168.142.255
+        inet6 fe80::20c:29ff:feaa:380a  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:aa:38:0a  txqueuelen 1000  (Ethernet)
+        RX packets 30234  bytes 42499023 (40.5 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 3842  bytes 349948 (341.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+	
