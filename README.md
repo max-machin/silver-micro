@@ -75,4 +75,9 @@ Accèder à la page PHP depuis :
 http://your_server_ip/info.php
 or
 http://your_domain/info.php
- 
+```
+
+Pour récupérer l'ip serveur de votre machine, il est possible depuis le terminal de commande de la machine virtuelle d'installer la paquet : 
+```console
+root@debian:~$ apt install net-tools
+ifconfig
