@@ -28,7 +28,15 @@ root@debian:~$ apt update
 ```
 
 ### Stack LAMP
-
+#### 1. Installer Apache 
+```console
+root@debian:~$ apt install apache2
+```
+Une fois installé, activer et démarrer le service : 
+```console
+root@debian:~$ systemctl enable apache2
+root@debian:~$ systemctl start apache2
+```
 
 
 
