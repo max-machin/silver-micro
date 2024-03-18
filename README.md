@@ -23,7 +23,7 @@ L'utilisateur devrait désormais être root :
 root@debian:~$ 
 ```
 
-La prochaine étape consiste à vérifier la présence du gestionnaire de paquet ( sinon l'installer sur la machine virtuelle ) 
+La prochaine étape consiste à vérifier la présence du gestionnaire de paquet ( sinon l'installer sur la machine virtuelle )  
 Si le gestionnaire de paquet est présent, mettre à jour les paquets lors de la première initialisation de la machine : 
 ```console
 root@debian:~$ apt update
