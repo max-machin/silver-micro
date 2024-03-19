@@ -286,3 +286,18 @@ PS> $env:DEBUG='myapp:*'; npm star
 
 Accèder à l'url suivante : 
 http://localhost:3000/
+
+## Docker 
+### 1. Container Php & Apache
+
+Créer un dockerfile dans le dossier de votre projet.  
+L'image part de : 
+```dockerfile
+# Dockerfile
+FROM php:8.2-apache
+```
+
+A l'aide d'un terminal, build et run pour check qu'il n'y ait pas de problèmes :
+```dockerfile
+docker build -t container/php .
+docker run -it -p 8080:80 container/php
