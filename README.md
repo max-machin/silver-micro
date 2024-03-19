@@ -296,7 +296,7 @@ L'image part de :
 # Dockerfile
 FROM php:8.2-apache
 ```
-
+( ! Assurez-vous d'avoir docker Desktop installer sur votre ordinateur ainsi que wsl ! )
 A l'aide d'un terminal, build et run pour check qu'il n'y ait pas de problèmes :
 ```dockerfile
 docker build -t container/php .
