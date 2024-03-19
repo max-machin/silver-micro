@@ -1,0 +1,143 @@
+Prérequis avant mise en place d'une stack LAMP : 
+1. Installation de Vmware ( ou VMware déjà installé ).
+2. Créer une machine virtuelle à partir du fichier iso de distribution debian.
+
+Une fois la machine virtuelle créer et démarrer. Lancer un shell depuis cette dernière : 
+
+Afin d'éviter des problèmes de permissions, il peut être utile d'utiliser la commande : 
+max123@debian:~$ sudo -i 
+
+Mise en place du stack MERN :
+1. Installer MongoDb : 
+Installer gnupg en amont
+root@debian:~# apt install gnupg
+
+Importer les clefs publiques : 
+root@debian:~# wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+
+Ajouter le repo aux sources : 
+root@debian:~# echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+Download libssl1 et l'installer :
+root@debian:~# wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+root@debian:~# dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+
+Enfin, installer MongoDb :
+root@debian:~# apt-get install -y mongodb-org
+
+Activer MongoDb :
+root@debian:~# systemctl enable mongod
+
+Start le server :
+root@debian:~# service mongod start
+
+Check le status pour être sur que le serveur run :
+
+root@debian:~# service mongod status
+● mongod.service - MongoDB Database Server
+     Loaded: loaded (/lib/systemd/system/mongod.service; enabled; preset: enabl>
+     Active: active (running) since Tue 2024-03-19 04:28:06 CET; 24s ago
+       Docs: https://docs.mongodb.org/manual
+   Main PID: 5453 (mongod)
+     Memory: 76.3M
+        CPU: 956ms
+     CGroup: /system.slice/mongod.service
+             └─5453 /usr/bin/mongod --config /etc/mongod.conf
+
+
+2. Configurer MongoDb
+
+Editer le fichier de config :
+root@debian:~# nano /etc/mongod.conf
+
+Décommenter la partie #security, au final il doit ressemble à ça :
+security:
+  authorization: enabled
+
+Puis autoriser les connexions externes(Pour récupérer l'ip, se référer : ###3. Installer PHP) :
+net:
+  port: 27017
+  bindIp: 127.0.0.1,[your_ip]
+
+Restart le server :
+root@debian:~# systemctl restart mongod
+
+Confirmer que MongoDb autorise les connexions externes :
+root@debian:~# lsof -i | grep mongo
+mongod    5605  mongodb   12u  IPv4  41849      0t0  TCP localhost:27017 (LISTEN)
+mongod    5605  mongodb   13u  IPv4  41850      0t0  TCP debian-MERN:27017 (LISTEN)
+
+Créer un admin MongoDb :
+root@debian:~# mongosh
+Current Mongosh Log ID:	65f90a4c24f757d7fedb83af
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.0
+Using MongoDB:		5.0.25
+Using Mongosh:		2.2.0
+
+root@debian:~# use admin
+switched to db admin
+
+Créer un admin avec tous les rôles et privilèges et créer un password :
+root@debian:~# db.createUser({user: "admin" , pwd: passwordPrompt() , roles: [{ role: "userAdminAnyDatabase" , db: "admin"}]})
+Enter password
+******{ ok: 1 }
+
+Maintenant, il est possible d'utiliser la string suivante pour se connecter à MongoDb :
+mongodb://admin:password@External-IP:27017/database
+
+3. Installer Node avec NVM
+
+L'installation de NVM nécessite les packages suivants, vérifier qu'ils soient bien présent sur la machine virtuelle :
+root@debian:~# apt install build-essential libssl-dev
+root@debian:~# apt-get install curl 
+
+Installer NVM :
+root@debian:~# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash 
+
+Activer l'environnement pour la première fois
+root@debian:~# source ~/.bashrc
+
+Vérifier que l'installation est réussie, fermer le terminal ouvrer un nouveau et essayer cette commande :
+root@debian:~# command -v nvm 
+
+Il est possible de changer la version utiliser à l'aide de cette commande :
+root@debian:~# nvm use 18 
+
+Pour vérifier la version installer :
+root@debian:~# node -v
+v18.19.1
+root@debian:~# npm -v
+10.2.4
+
+3. Installer React.js
+
+Placez-vous dans le dossier ou vous souhaiter installer l'app puis à l'aide de la commande ci-dessous, l'installer :
+root@debian:~# npx create-react-app frontend
+
+Se rendre dans le dossier de l'application et run un build :
+root@debian:~# cd [your_folder]/frontend
+root@debian:~# npm run build
+
+4. Installer Express.js
+
+installer express-generator :
+root@debian:~# npm install -g express-generator
+
+Créer une app backend :
+root@debian:~# express --view=pug backend
+
+Installer les dépendances :
+root@debian:~# cd [your_folder]/backend
+root@debian:~# npm install
+
+Pour run l'app : MacOS ou Linux
+$ DEBUG=myapp:* npm start
+
+Windows cmd prompt :
+> set DEBUG=myapp:* & npm start
+
+Windows Powershell
+PS> $env:DEBUG='myapp:*'; npm star
+
+Accèder à l'url suivante : http://localhost:3000/
+
