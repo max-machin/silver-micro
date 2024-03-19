@@ -162,7 +162,7 @@ Décommenter la partie #security, au final il doit ressemble à ça :
 security:
   authorization: enabled
 ```
-[Puis autoriser les connexions externes](#3. Installer PHP) : 
+Puis autoriser les connexions externes(Pour récupérer l'ip, se référer : ###3. Installer PHP) : 
 ```console
 net:
   port: 27017
