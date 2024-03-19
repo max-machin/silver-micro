@@ -28,7 +28,7 @@ root@debian:~$ apt update
 ```
 
 ## Stack LAMP
-#### 1. Installer Apache 
+### 1. Installer Apache 
 ```console
 root@debian:~$ apt install apache2
 ```
@@ -38,7 +38,7 @@ root@debian:~$ systemctl enable --now apache2
 root@debian:~$ systemctl start apache2
 ```
 
-#### 2. Installer MariaDb 
+### 2. Installer MariaDb 
 ```console
 root@debian:~$ apt install mariadb-server
 ```
@@ -54,7 +54,7 @@ Check la status du service :
 root@debian:~$ systemctl status mariadb --no-pager -l
 ```
 
-#### 3. Installer PHP
+### 3. Installer PHP
 ```console
 root@debian:~$ apt install php libapache2-mod-php
 ```
@@ -100,7 +100,7 @@ ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 ```
 
 ## Stack MERN 
-#### 1. Installer MongoDb
+### 1. Installer MongoDb
 Il faut installer gnupg en amont : 
 ```console
 root@debian:~$ apt install gnupg
@@ -150,4 +150,21 @@ root@debian:~$ service mongod status
      CGroup: /system.slice/mongod.service
              └─5453 /usr/bin/mongod --config /etc/mongod.conf
 
+```
+
+### 2. Configurer MongoDb
+Editer le fichier de config : 
+```console
+sudo nano /etc/mongod.conf
+```
+Décommenter la partie #security, au final il doit ressemble à ça : 
+```console
+security:
+  authorization: enabled
+```
+Puis autoriser les connexions externes ( il est possible de récupérer l'ip à l'aide du tutoriel 3 stack LAMP )(### 3. Installer PHP) : 
+```console
+net:
+  port: 27017
+  bindIp: 127.0.0.1,[your_ip]
 ```
