@@ -181,6 +181,28 @@ mongod    5605  mongodb   12u  IPv4  41849      0t0  TCP localhost:27017 (LISTEN
 mongod    5605  mongodb   13u  IPv4  41850      0t0  TCP debian-MERN:27017 (LISTEN)
 ```
 
+Créer un admin MongoDb : 
 ```console
-root@debian:~$
-``` 
+root@debian:~$ mongosh
+Current Mongosh Log ID:	65f90a4c24f757d7fedb83af
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.0
+Using MongoDB:		5.0.25
+Using Mongosh:		2.2.0
+
+root@debian:~$ use admin
+switched to db admin
+```
+
+Créer un admin avec tous les rôles et privilèges et créer un password : 
+```console
+root@debian:~$ db.createUser({user: "admin" , pwd: passwordPrompt() , roles: [{ role: "userAdminAnyDatabase" , db: "admin"}]})
+Enter password
+******{ ok: 1 }
+```
+
+Maintenant, il est possible d'utiliser la string suivante pour se connecter à MongoDb : 
+```console
+mongodb://admin:password@External-IP:27017/database
+```
+
+### 2. Installer Node avec NVM
