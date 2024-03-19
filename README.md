@@ -90,9 +90,9 @@ ifconfig
 L'adresse ip cible est l'adresse inet : 
 ```console
 ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 192.168.142.128  netmask 255.255.255.0  broadcast 192.168.142.255
-        inet6 fe80::20c:29ff:feaa:380a  prefixlen 64  scopeid 0x20<link>
-        ether 00:0c:29:aa:38:0a  txqueuelen 1000  (Ethernet)
+        inet 192.168.111.111  netmask 255.255.255.0  broadcast 192.168.142.255
+        inet6 ze18::20c:32re:rftt:380a  prefixlen 64  scopeid 0x20<link>
+        ether 11:0c:29:bb:23:0a  txqueuelen 1000  (Ethernet)
         RX packets 30234  bytes 42499023 (40.5 MiB)
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 3842  bytes 349948 (341.7 KiB)
