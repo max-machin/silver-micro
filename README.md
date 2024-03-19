@@ -99,3 +99,31 @@ ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 ```
 
+## Stack MERN 
+#### 1. Installer MongoDb
+Il faut installer gnupg en amont : 
+```console
+root@debian:~$ apt install gnupg
+```
+
+Ensuite importer les clefs publics : 
+```console
+wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+```
+
+Ajouter le repo aux sources : 
+```console
+echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+```
+
+Download libssl1 et l'installer : 
+```console
+wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+```
+
+Enfin, installer mongoDb : 
+```console
+sudo apt-get install -y mongodb-org
+```
+
