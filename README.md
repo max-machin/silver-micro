@@ -289,15 +289,21 @@ http://localhost:3000/
 
 ## Docker 
 ### 1. Container Php & Apache
+#### 1.1 Création du container 
 
 Créer un dockerfile dans le dossier de votre projet.  
-L'image part de : 
+Image php:8.2-apache avec comme racine de serveur Web /app : 
 ```dockerfile
 # Dockerfile
 FROM php:8.2-apache
+WORKDIR /app
 ```
+
 ( ! Assurez-vous d'avoir docker Desktop installer sur votre ordinateur ainsi que wsl ! )
 A l'aide d'un terminal, build et run pour check qu'il n'y ait pas de problèmes :
 ```dockerfile
 docker build -t container/php .
 docker run -it -p 8080:80 container/php
+```
+
+
