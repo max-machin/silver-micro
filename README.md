@@ -297,6 +297,7 @@ Image php:8.2-apache avec comme racine de serveur Web /app :
 # Dockerfile
 FROM php:8.2-apache
 WORKDIR /app
+COPY . . 
 ```
 
 ( ! Assurez-vous d'avoir docker Desktop installer sur votre ordinateur ainsi que wsl ! )
