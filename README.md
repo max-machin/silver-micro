@@ -162,7 +162,7 @@ Décommenter la partie #security, au final il doit ressemble à ça :
 security:
   authorization: enabled
 ```
-Puis autoriser les connexions externes ( il est possible de récupérer l'ip à l'aide du tutoriel 3 stack LAMP )(### 3. Installer PHP) : 
+[Puis autoriser les connexions externes](### 3. Installer PHP) : 
 ```console
 net:
   port: 27017
