@@ -155,7 +155,7 @@ root@debian:~$ service mongod status
 ### 2. Configurer MongoDb
 Editer le fichier de config : 
 ```console
-sudo nano /etc/mongod.conf
+root@debian:~$ nano /etc/mongod.conf
 ```
 Décommenter la partie #security, au final il doit ressemble à ça : 
 ```console
@@ -168,3 +168,19 @@ net:
   port: 27017
   bindIp: 127.0.0.1,[your_ip]
 ```
+
+Restart le server : 
+```console
+root@debian:~$ systemctl restart mongod
+```
+
+Confirmer que MongoDb autorise les connexions externes : 
+```console
+root@debian:~$ lsof -i | grep mongo
+mongod    5605  mongodb   12u  IPv4  41849      0t0  TCP localhost:27017 (LISTEN)
+mongod    5605  mongodb   13u  IPv4  41850      0t0  TCP debian-MERN:27017 (LISTEN)
+```
+
+```console
+root@debian:~$
+``` 
