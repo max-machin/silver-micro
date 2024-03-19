@@ -108,22 +108,46 @@ root@debian:~$ apt install gnupg
 
 Ensuite importer les clefs publics : 
 ```console
-wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+root@debian:~$ wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
 ```
 
 Ajouter le repo aux sources : 
 ```console
-echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+root@debian:~$ echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
 ```
 
 Download libssl1 et l'installer : 
 ```console
-wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+root@debian:~$ wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+root@debian:~$ dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
 ```
 
-Enfin, installer mongoDb : 
+Enfin, installer MongoDb : 
 ```console
-sudo apt-get install -y mongodb-org
+root@debian:~$ apt-get install -y mongodb-org
 ```
 
+Activer MongoDb : 
+```console
+root@debian:~$ systemctl enable mongod
+```
+
+Start le server : 
+```console
+root@debian:~$ service mongod start
+```
+
+Check le status pour être sur que le serveur run :
+```console
+root@debian:~$ service mongod status
+● mongod.service - MongoDB Database Server
+     Loaded: loaded (/lib/systemd/system/mongod.service; enabled; preset: enabl>
+     Active: active (running) since Tue 2024-03-19 04:28:06 CET; 24s ago
+       Docs: https://docs.mongodb.org/manual
+   Main PID: 5453 (mongod)
+     Memory: 76.3M
+        CPU: 956ms
+     CGroup: /system.slice/mongod.service
+             └─5453 /usr/bin/mongod --config /etc/mongod.conf
+
+```
