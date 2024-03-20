@@ -289,8 +289,10 @@ http://localhost:3000/
 
 ## Docker 
 ### 1. Container Php & Apache
+
 #### 1.1 Création du container 
 
+( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/php )
 Créer un dockerfile dans le dossier de votre projet.  
 Il faut noter que le dossier src devra être le dossier racine de l'application contenant tout le code PHP
 Image php:7.2-apache : 
@@ -308,4 +310,13 @@ Run le container sur le port 80 :
 docker run -d -p 80:80 --name my-running-app my-php-app
 ```
 
-L'app devrait alors être disponible depuis http://localhost:80
+L'app devrait alors être disponible depuis : http://localhost:80
+
+### 1. Container MySQL
+
+( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/mysql )
+
+Démarrer une instance MySQL : 
+```bash
+$ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+```
