@@ -294,13 +294,22 @@ http://localhost:3000/
 
 ( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/php )
 Créer un dockerfile dans le dossier de votre projet.  
-Il faut noter que le dossier src devra être le dossier racine de l'application contenant tout le code PHP
+Il faut noter que le dossier src devra être le dossier racine de l'application contenant tout le code PHP  
 Image php:7.2-apache : 
 ```dockerfile
 # Dockerfile
 FROM php:7.2-apache
 COPY src/ /var/www/html/
 ```
+Exemple de dossier : 
+```bash 
+├── src
+│   ├── index.php
+│   └── home.php
+├── Dockerfile
+└── README.md
+```
+
 Build l'image : 
 ```dockerfile
 docker build -t my-php-app .
@@ -314,9 +323,44 @@ L'app devrait alors être disponible depuis : http://localhost:80
 
 ### 1. Container MySQL
 
+#### 1. Création d'une instance SQL depuis l'image 
+
 ( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/mysql )
 
-Démarrer une instance MySQL : 
+Démarrer une instance MySQL (code approprié au cas) : 
 ```bash
-$ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+docker run --name mysql -d \
+    -p 3306:3306 \
+    -e MYSQL_ROOT_PASSWORD=change-me \
+    --restart unless-stopped \
+    mysql:8
+```
+La commande démarre un container avec mySQL8. Le mot de passe pour l'utilisateur root devra être renseigné manuellement.  
+Le flag -d indique que le container run en brackground jusqu'à être arrêter. Le restart indique à docker de restart sans arrêt le container.  
+Le flag -p autorise la redirection de port dans le container afin de pouvoir accéder à la base de données depuis le port 3306.
+
+#### 2. Persister la data avec un volume
+
+L'image Docker MySQL est configuré de base pour stocker les données dans le dossier : /var/lib/mysql
+Monter un volume dans ce dossier permet de persister le stockage de données.
+
+Stop et supprimer l'instance SQL en cours : 
+```bash
+docker stop mysql
+docker rm mysql
+```
+
+Puis démarrer un nouveau avec les nouvelles configurations : 
+```bash
+docker run --name mysql -d \
+    -p 3306:3306 \
+    -e MYSQL_ROOT_PASSWORD=change-me \
+    -v mysql:/var/lib/mysql \
+    mysql:8
+```
+Cette commande va créer un volume Docker nommé : mysql.
+
+Pour détruire le volume : 
+```bash
+docker volume rm mysql
 ```
