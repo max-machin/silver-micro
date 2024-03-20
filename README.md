@@ -378,7 +378,7 @@ docker volume rm mysql
 
 ### 3. Container PhpMyAdmin
 
-#### 2.1 Création d'une instance PhpMyAdmin depuis l'image
+#### 3.1 Création d'une instance PhpMyAdmin depuis l'image
 
 ( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/phpmyadmin )
 
