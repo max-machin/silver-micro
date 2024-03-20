@@ -287,4 +287,106 @@ PS> $env:DEBUG='myapp:*'; npm star
 Accèder à l'url suivante : 
 http://localhost:3000/
 
+## Docker 
+### 1. Container Php & Apache
+
+#### 1.1 Création du container 
+
+( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/php )
+
+Créer un dockerfile dans le dossier de votre projet.  
+Il faut noter que le dossier src devra être le dossier racine de l'application contenant tout le code PHP  
+Image php:7.2-apache : 
+```dockerfile
+# Dockerfile
+FROM php:7.2-apache
+COPY src/ /var/www/html/
+VOLUME /myvolume
+```
+Exemple de dossier : 
+```bash 
+├── src
+│   ├── index.php
+│   └── home.php
+├── Dockerfile
+└── README.md
+```
+
+Créez un dossier src avec un fichier index.php contenant : 
+```bash 
+<?php
+for($i=1;$i<=100;$i++) {
+    $out = ($i%3?'':'Fizz').($i%5?'':'Buzz');
+    echo ($out?$out:$i)."\n";
+}
+```
+
+Build l'image : 
+```dockerfile
+docker build -t my-php-app .
+```
+Run le container sur le port 80 : 
+```dockerfile
+docker run -d -p 80:80 --name my-running-app my-php-app
+```
+
+L'app devrait alors être disponible depuis : http://localhost:80
+
+### 2. Container MySQL
+
+#### 2.1 Création d'une instance SQL depuis l'image 
+
+( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/mysql )
+
+Démarrer une instance MySQL (code approprié au cas) : 
+```bash
+docker run --name mysql -d \
+    -p 3306:3306 \
+    -e MYSQL_ROOT_PASSWORD=change-me \
+    --restart unless-stopped \
+    mysql:8
+```
+La commande démarre un container avec mySQL8. Le mot de passe pour l'utilisateur root devra être renseigné manuellement.  
+Le flag -d indique que le container run en brackground jusqu'à être arrêter. Le restart indique à docker de restart sans arrêt le container.  
+Le flag -p autorise la redirection de port dans le container afin de pouvoir accéder à la base de données depuis le port 3306.
+
+#### 2.2 Persister la data avec un volume
+
+L'image Docker MySQL est configuré de base pour stocker les données dans le dossier : /var/lib/mysql
+Monter un volume dans ce dossier permet de persister le stockage de données.
+
+Stop et supprimer l'instance SQL en cours : 
+```bash
+docker stop mysql
+docker rm mysql
+```
+
+Puis démarrer un nouveau avec les nouvelles configurations : 
+```bash
+docker run --name mysql -d \
+    -p 3306:3306 \
+    -e MYSQL_ROOT_PASSWORD=change-me \
+    -v mysql:/var/lib/mysql \
+    mysql:8
+```
+Cette commande va créer un volume Docker nommé : mysql.
+
+Pour détruire le volume : 
+```bash
+docker volume rm mysql
+```
+
+### 3. Container PhpMyAdmin
+
+#### 3.1 Création d'une instance PhpMyAdmin depuis l'image
+
+( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/phpmyadmin )
+
+Lancer un container depuis l'image phpmyadmin liée au container MySQL précedemment lancé : 
+```bash
+docker run --name phpmyadmin -d --link mysql:db -p 8080:80 phpmyadmin
+```
+
+A ce moment, l'interface PhpMyAdmin est accessible depuis : http://localhost:8080/
+L'utilisateur de base est root et le mot de passe est celui renseigné plus haut au démarrage du container MySQL.
 
