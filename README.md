@@ -300,6 +300,7 @@ Image php:7.2-apache :
 # Dockerfile
 FROM php:7.2-apache
 COPY src/ /var/www/html/
+VOLUME /myvolume
 ```
 Exemple de dossier : 
 ```bash 
@@ -321,9 +322,9 @@ docker run -d -p 80:80 --name my-running-app my-php-app
 
 L'app devrait alors être disponible depuis : http://localhost:80
 
-### 1. Container MySQL
+### 2. Container MySQL
 
-#### 1. Création d'une instance SQL depuis l'image 
+#### 2.1 Création d'une instance SQL depuis l'image 
 
 ( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/mysql )
 
@@ -339,7 +340,7 @@ La commande démarre un container avec mySQL8. Le mot de passe pour l'utilisateu
 Le flag -d indique que le container run en brackground jusqu'à être arrêter. Le restart indique à docker de restart sans arrêt le container.  
 Le flag -p autorise la redirection de port dans le container afin de pouvoir accéder à la base de données depuis le port 3306.
 
-#### 2. Persister la data avec un volume
+#### 2.2 Persister la data avec un volume
 
 L'image Docker MySQL est configuré de base pour stocker les données dans le dossier : /var/lib/mysql
 Monter un volume dans ce dossier permet de persister le stockage de données.
@@ -364,3 +365,18 @@ Pour détruire le volume :
 ```bash
 docker volume rm mysql
 ```
+
+### 3. Container PhpMyAdmin
+
+#### 2.1 Création d'une instance PhpMyAdmin depuis l'image
+
+( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/phpmyadmin )
+
+Lancer un container depuis l'image phpmyadmin liée au container MySQL précedemment lancé : 
+```bash
+docker run --name phpmyadmin -d --link mysql:db -p 8080:80 phpmyadmin
+```
+
+A ce moment, l'interface PhpMyAdmin est accessible depuis : http://localhost:8080/
+L'utilisateur de base est root et le mot de passe est celui renseigné plus haut au démarrage du container MySQL.
+
