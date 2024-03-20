@@ -287,7 +287,9 @@ PS> $env:DEBUG='myapp:*'; npm star
 Accèder à l'url suivante : 
 http://localhost:3000/
 
-## Docker 
+## Docker ( LAMP & MERN ) 
+
+## LAMP
 ### 1. Container Php & Apache
 
 #### 1.1 Création du container 
@@ -388,4 +390,37 @@ docker run --name phpmyadmin -d --link mysql:db -p 8080:80 phpmyadmin
 
 A ce moment, l'interface PhpMyAdmin est accessible depuis : http://localhost:8080/
 L'utilisateur de base est root et le mot de passe est celui renseigné plus haut au démarrage du container MySQL.
+
+## MERN
+### 1. Container React.Js
+
+Créer un dossier d'app vide, placer à la racine un Dockerfile : 
+```bash 
+├── app
+│   └── Dockerfile
+```
+
+Placer dans le dockerfile : 
+```dockerfile 
+# Layer 1: Utilisation d'une image node:17-alpine pour la base du container.
+FROM node:17-alpine
+
+# Layer 2: Créer un dossier appeler `app` dans le container et l'utiliser comme dossier de travail.
+WORKDIR /app
+
+# Layer 3: Copier les package.json depuis la root du projet vers `app` du container.
+COPY package.json .
+
+# Layer 4: Installer les dépendances
+RUN npm install
+
+# Layer 5: Copier tous les fichiers depuis la root du projet jusqu'à `app` du container.
+COPY . .
+
+# Layer 6: Déclarer le port qui doit être écouté par le container.
+EXPOSE 3000
+
+# Layer 7: Run npm start quand le container est build.
+CMD ["npm", "start"]
+```
 
