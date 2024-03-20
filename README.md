@@ -299,7 +299,9 @@ Il faut noter que le dossier src devra être le dossier racine de l'application 
 Image php:7.2-apache : 
 ```dockerfile
 # Dockerfile
+# Layer 1: Utilisation d'une image php:7.2-apache pour la base du container.
 FROM php:7.2-apache
+# Layer 2: Copier le contenu de l'app `src` dans le dossier /var/www/html du container
 COPY src/ /var/www/html/
 ```
 Exemple de dossier : 
