@@ -293,6 +293,7 @@ http://localhost:3000/
 #### 1.1 Création du container 
 
 ( Possibilité de se référer sur le hub docker : https://hub.docker.com/_/php )
+
 Créer un dockerfile dans le dossier de votre projet.  
 Il faut noter que le dossier src devra être le dossier racine de l'application contenant tout le code PHP  
 Image php:7.2-apache : 
@@ -309,6 +310,15 @@ Exemple de dossier :
 │   └── home.php
 ├── Dockerfile
 └── README.md
+```
+
+Créez un dossier src avec un fichier index.php contenant : 
+```bash 
+<?php
+for($i=1;$i<=100;$i++) {
+    $out = ($i%3?'':'Fizz').($i%5?'':'Buzz');
+    echo ($out?$out:$i)."\n";
+}
 ```
 
 Build l'image : 
