@@ -292,6 +292,7 @@ http://localhost:3000/
 #### 1.1 Création du container 
 
 Créer un dockerfile dans le dossier de votre projet.  
+Il faut noter que le dossier src devra être le dossier racine de l'application contenant tout le code PHP
 Image php:7.2-apache : 
 ```dockerfile
 # Dockerfile
@@ -307,3 +308,4 @@ Run le container sur le port 80 :
 docker run -d -p 80:80 --name my-running-app my-php-app
 ```
 
+L'app devrait alors être disponible depuis http://localhost:80
