@@ -11,7 +11,6 @@ Image php:7.2-apache :
 # Dockerfile
 FROM php:7.2-apache
 COPY src/ /var/www/html/
-VOLUME /myvolume
 
 Exemple de dossier :
 ├── src
@@ -31,7 +30,7 @@ Build l'image :
 docker build -t my-php-app .
 
 Run le container sur le port 80 :
-docker run -d -p 80:80 --name my-running-app my-php-app
+docker run --name my-running-app -d -p 80:80 -v "/$(pwd)/src/index.php:/var/www/html/index.php/" my-php-app
 
 L'app devrait alors être disponible depuis : http://localhost:80
 
@@ -83,3 +82,4 @@ docker run --name phpmyadmin -d --link mysql:db -p 8080:80 phpmyadmin
 
 A ce moment, l'interface PhpMyAdmin est accessible depuis : http://localhost:8080/ 
 L'utilisateur de base est root et le mot de passe est celui renseigné plus haut au démarrage du container MySQL.
+

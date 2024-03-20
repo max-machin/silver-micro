@@ -301,7 +301,6 @@ Image php:7.2-apache :
 # Dockerfile
 FROM php:7.2-apache
 COPY src/ /var/www/html/
-VOLUME /myvolume
 ```
 Exemple de dossier : 
 ```bash 
@@ -327,7 +326,7 @@ docker build -t my-php-app .
 ```
 Run le container sur le port 80 : 
 ```dockerfile
-docker run -d -p 80:80 --name my-running-app my-php-app
+docker run --name my-running-app -d -p 80:80 -v "/$(pwd)/src/index.php:/var/www/html/index.php/" my-php-app
 ```
 
 L'app devrait alors être disponible depuis : http://localhost:80
