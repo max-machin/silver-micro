@@ -394,9 +394,13 @@ L'utilisateur de base est root et le mot de passe est celui renseigné plus haut
 ## MERN
 ### 1. Container React.Js
 
-Créer un dossier d'app vide, placer à la racine un Dockerfile : 
+#### 1.1 Configurations (installation React.Js + création de l'image)
+
+Créer une application React.Js et placer à la racine un Dockerfile ainsi qu'un .dockerignore : 
+npx create-react-app app
 ```bash 
 ├── app
+│   ├── .dockerignore
 │   └── Dockerfile
 ```
 
@@ -423,4 +427,38 @@ EXPOSE 3000
 # Layer 7: Run npm start quand le container est build.
 CMD ["npm", "start"]
 ```
+
+.dockerignore : 
+```dockerfile
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.git
+yarn-error.log
+```
+
+Depuis le dossier source de l'app (au même niveau que le Dockerfile) créer l'image : 
+```bash 
+docker build -t reactapp .
+```
+
+Run l'image : 
+```bash 
+docker run --name clientapp_c -p 3000:3000 -d reactapp
+```
+
+Commandes pour start et stop le container : 
+```bash 
+docker stop CONTAINER_NAME 
+docker start CONTAINER_NAME
+```
+
+#### 1.2 Créer un volume
+
+Pour run le container avec un volume attaché : 
+```bash
+docker run --name clientapp_c -p 3000:3000 -v "/$(pwd)/app/" -v /app/node_modules reactapp
+``` 
 
