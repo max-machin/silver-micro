@@ -394,3 +394,176 @@ A ce moment, l'interface PhpMyAdmin est accessible depuis : http://localhost:808
 L'utilisateur de base est root et le mot de passe est celui renseigné plus haut au démarrage du container MySQL.
 
 ## MERN
+
+Pour pourvoir connecter les différents container, il faut mettre en place un network : 
+```bash 
+docker network create my-network 
+```
+
+### 1. Backend (Node Express)
+
+Créer un dossier nommé : `backend`.
+Dans ce dossier créer un fichier nommé : server.js (ce fichier contiendra le code node)  
+
+Ouvrir un terminal, se rendre dans le repertoire `backend` et run : 
+```bash 
+npm init --y
+```
+Cette commande va permettre d'initialiser l'app et créer un package.json
+
+Installer express dans `backend`: 
+```bash 
+npm install express --save
+```
+
+Dans le fichier server.js ajouter ce code : 
+```js 
+const express = require('express');
+
+//Create an app
+const app = express();
+app.get('/', (req, res) => {
+    res.send('Hello world\n');
+});
+
+//Listen port
+const PORT = 8080;
+app.listen(PORT);
+console.log(`Running on port ${PORT}`);
+```
+
+Run l'app pour s'assurer qu'elle est fonctionnelle : 
+```bash
+node server.js
+```
+
+L'app est disponible depuis : http://localhost:8080
+
+#### 1.1 Configuration de Dockerfile / .dockerignore
+
+Créer un fichier Dockerfile à la racine de `backend` et copier dedans le Dockerfile officiel du site Nodejs : 
+```Dockerfile 
+# Dockerfile
+# Layer 1: Image node:10
+FROM node:10
+
+# Layer 2: Création du dossier de l'app
+WORKDIR /usr/src/app
+
+# Layer 3: Installer les dépendances.
+COPY package*.json ./
+RUN npm install
+
+# Layer 4: Copier le contenu de l'app
+COPY . .
+
+# Layer 5: Port à écouter par le container
+EXPOSE 8080
+
+# Layer 6: Run de la commande node server.js
+CMD [ "node", "server.js" ]
+```
+
+Créer également un .dockerignore afin d'éviter la copie des node_modules sur le container : 
+```dockerfile
+# .dockerignore:
+node_modules
+```
+#### 1.2 Monter le container
+
+Build l'image : 
+```bash
+docker build -t backend-node-image .
+```
+
+Puis run le container : 
+```bash 
+docker run -it --rm --name backend --network my-network -p 8080:8080 -v data:/data/node backend-node-image
+```
+
+### 2. Database (MongoDb)
+
+Démarrer un container MongoDb à l'aide de la commande suivante : 
+```bash 
+docker run --name mongo-database --network my-network -d -p 27017:27017 mongo
+```
+Il devient donc possible de se connecter à l'instance MongoDb via : mongodb://localhost:27017
+
+Commande utile : 
+Stopper et supprimer le container :
+```bash
+docker stop mongo-database && docker rm mongo-database
+```
+
+Pour persister les données stocker dans le container, ajouter un volume avec un user root via le flag -v : 
+```bash 
+docker run --name mongo-database --network my-network -d -p 27017:27017 -v data:/data/db -e MONGO_INITDB_ROOT_USERNAME=user -e MONGO_INITDB_ROOT_PASSWORD=pass mongo
+```
+
+### 4. Frontend (React.js)
+
+Créer une application React.js depuis : 
+```bash
+npx create-react-app frontend
+```
+
+Depuis la racine de l'app (`frontend`), ajouter un Dockerfile : 
+```dockerfile
+# Dockerfile
+# Layer 1: Image node 
+FROM node:17-alpine 
+
+# Layer 2: Définir le dossier route du container
+WORKDIR /app 
+
+# Layer 3: copy les package.json dans le dossier du container
+COPY package.json . 
+
+# Layer 4: Installation des dépendances
+RUN npm install 
+
+# Layer 5: Copier tous les fichiers depuis le dossier actuel vers le container
+COPY . . 
+
+# Layer 6: Définition du port
+EXPOSE 3000 
+
+# Layer 7: Run npm start
+CMD [“npm”, “start”] 
+```
+
+Ajouter un .dockerignore : 
+```dockerfile
+node_modules
+Dockerfile
+.git
+.gitignore
+.dockerignore
+```
+
+Depuis le dossier `frontend` build l'image du projet : 
+```bash 
+docker build -t frontend-react-image .
+```
+
+Run le container : 
+```bash
+docker run -it --rm --name frontend --network my-network -v "/${PWD}:/app" -v /app/node_modules -p 3001:3000 -e CHOKIDAR_USEPOLLING=true frontend-react-image
+```
+
+### Network 
+
+Si le network n'a pas été créer en amont et initialiser lors des commandes run des containers, il est nécessaire de suivre cette documentation.
+
+Il est possible de préciser le network dans les commandes de run des container (exemple) :
+```bash
+docker run -it --rm --name backend --network my-network -p 8080:8080 -v data:/data/node backend-node-image
+```
+
+Il est également possible de connecter les container manuellement au même network.
+Il faut s'assurer d'avoir créer le network et que les containers soit run : 
+```bash
+docker network connect my-network frontend
+docker network connect my-network backend
+docker network connect my-network mongo-database
+```

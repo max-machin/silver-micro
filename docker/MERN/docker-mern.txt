@@ -1,0 +1,90 @@
+## MERN
+
+### 1. Backend (Node Express)
+
+Créer un dossier nommé : `app`.
+Dans ce dossier créer un fichier nommé : server.js (ce fichier contiendra le code node)  
+
+Ouvrir un terminal, se rendre dans le repertoire `app` et run : 
+```bash 
+npm init --y
+```
+Cette commande va permettre d'initialiser l'app et créer un package.json
+
+Installer express dans `app`: 
+```bash 
+npm install express --save
+```
+
+Dans le fichier server.js ajouter ce code : 
+```js 
+const express = require('express');
+
+//Create an app
+const app = express();
+app.get('/', (req, res) => {
+    res.send('Hello world\n');
+});
+
+//Listen port
+const PORT = 8080;
+app.listen(PORT);
+console.log(`Running on port ${PORT}`);
+```
+
+Run l'app pour s'assurer qu'elle est fonctionnelle : 
+```bash
+node server.js
+```
+
+L'app est disponible depuis : http://localhost:8080
+
+#### 1.1 Configuration de Dockerfile / .dockerignore
+
+Créer un fichier Dockerfile à la racine de `app` et copier dedans le Dockerfile officiel du site Nodejs : 
+```Dockerfile 
+# Dockerfile
+# Layer 1: Image node:10
+FROM node:10
+
+# Layer 2: Création du dossier de l'app
+WORKDIR /usr/src/app
+
+# Layer 3: Installer les dépendances.
+COPY package*.json ./
+RUN npm install
+
+# Layer 4: Copier le contenu de l'app
+COPY . .
+
+# Layer 5: Port à écouter par le container
+EXPOSE 8080
+
+# Layer 6: Run de la commande node server.js
+CMD [ "node", "server.js" ]
+```
+
+Créer également un .dockerignore afin d'éviter la copie des node_modules sur le container : 
+```dockerfile
+# .dockerignore:
+node_modules
+```
+#### 1.2 Monter et run le container
+
+Build le container : 
+```bash
+docker build -t expressnode .
+```
+
+Puis run le container : 
+```bash 
+docker run -it --rm -p 8080:8080 expressnode
+```
+
+### 2. Database (MongoDb)
+
+Démarrer un container MongoDb à l'aide de la commande suivante : 
+```bash 
+export MONGODB_VERSION=6.0-ubi8
+docker run --name mongodb -d mongodb/mongodb-community-server:$MONGODB_VERSION
+```
