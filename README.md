@@ -577,13 +577,13 @@ docker network connect my-network mongo-database
 
 Avant tout, créer le dossier de l'application ainsi qu'un fichier php index dans un sous-dossier : 
 ```bash 
-mkdir -p lamp-docker/DocumentRoot
-echo "<?php phpinfo(); ?>" > lamp-docker/DocumentRoot/index.php
+mkdir -p compose-lamp/DocumentRoot
+echo "<?php phpinfo(); ?>" > compose-lamp/DocumentRoot/index.php
 ```
 
 #### 1.2 Php Apache
 
-Ajouter un nouveau dossier dans l'app `lamp-docker` et nommé le php-apache.
+Ajouter un nouveau dossier dans l'app `compose-lamp` et nommé le php-apache.
 Dans ce dossier, ajouter un Dockerfile : 
 ```dockerfile
 FROM php:7.2.1-apache
@@ -591,7 +591,7 @@ MAINTAINER egidio docile
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 ```
 
-Ensuite il faut créer un fichier docker-compose.yml à la racine du projet (`lamp-docker`) : 
+Ensuite il faut créer un fichier docker-compose.yml à la racine du projet (`compose-lamp`) : 
 ```dockerfile
 version: '3'
 services:
