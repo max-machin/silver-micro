@@ -1,5 +1,6 @@
 # silver-micro
-Projet de machine virtuelle dockerisée.   
+
+Projet de machine virtuelle LAMP & MERN / Container LAMP & MERN / Kubernetes   
 Hyperviseur de type 2 : VMware  
 Distribution : Debian 12
 
@@ -567,3 +568,129 @@ docker network connect my-network frontend
 docker network connect my-network backend
 docker network connect my-network mongo-database
 ```
+
+## Docker compose
+
+### 1. LAMP
+
+#### 1.1 Configuration de l'environnement 
+
+Avant tout, créer le dossier de l'application ainsi qu'un fichier php index dans un sous-dossier : 
+```bash 
+mkdir -p lamp-docker/DocumentRoot
+echo "<?php phpinfo(); ?>" > lamp-docker/DocumentRoot/index.php
+```
+
+#### 1.2 Php Apache
+
+Ajouter un nouveau dossier dans l'app `lamp-docker` et nommé le php-apache.
+Dans ce dossier, ajouter un Dockerfile : 
+```dockerfile
+FROM php:7.2.1-apache
+MAINTAINER egidio docile
+RUN docker-php-ext-install pdo pdo_mysql mysqli
+```
+
+Ensuite il faut créer un fichier docker-compose.yml à la racine du projet (`lamp-docker`) : 
+```dockerfile
+version: '3'
+services:
+    php-apache:
+        build:
+            context: ./php-apache
+        ports:
+            -  80:80
+        volumes:
+            - ./DocumentRoot:/var/www/html
+        links:
+            - 'mariadb'
+```
+
+#### 1.3 Database
+
+Ajouter le code suivant au fichier docker-compose.yml : 
+```dockerfile
+mariadb:
+    image: mariadb:10.1
+    volumes:
+        - mariadb:/var/lib/mysql
+    environment:
+        TZ: "Europe/Rome"
+        MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+        MYSQL_ROOT_PASSWORD: "rootpwd"
+        MYSQL_USER: 'testuser'
+        MYSQL_PASSWORD: 'testpassword'
+        MYSQL_DATABASE: 'testdb'
+```
+
+#### 1.4 PhpMyAdmin
+
+Ajouter la partie PhpMyAdmin au docker-compose.yml : 
+```dockerfile 
+phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+```
+
+
+#### 1.5 Volumes
+
+Ajouter la partie des volumes au docker-compose.yml : 
+```dockerfile
+volumes:
+    mariadb:
+```
+
+Le fichier final doit ressembler à ça : 
+```dockerfile
+version: '3'
+services:
+    php-apache:
+        image: php:7.2.1-apache
+        ports:
+            - 80:80
+        volumes:
+            - ./DocumentRoot:/var/www/html:z
+        links:
+            - 'mariadb'
+
+    mariadb:
+        image: mariadb:10.1
+        volumes:
+            - mariadb:/var/lib/mysql
+        environment:
+            TZ: "Europe/Rome"
+            MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+            MYSQL_ROOT_PASSWORD: "rootpwd"
+            MYSQL_USER: 'testuser'
+            MYSQL_PASSWORD: 'testpassword'
+            MYSQL_DATABASE: 'testdb'
+
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+          - 8080:80
+        environment:
+          - PMA_ARBITRARY=1
+        links:
+          - 'mariadb'
+volumes:
+    mariadb:
+
+```
+
+Il ne reste qu'à build l'environnement : 
+```bash 
+docker-compose up
+```
+
+Une fois l'application build, accèder à l'adresse suivante pour voir le fichier index.php : 
+
+http://localhost
+
+### 2. MERN
