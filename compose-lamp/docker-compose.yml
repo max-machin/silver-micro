@@ -8,6 +8,8 @@ services:
             - ./DocumentRoot:/var/www/html:z
         links:
             - 'mariadb'
+        networks:
+            - app-network
 
     mariadb:
         image: mariadb:10.1
@@ -20,6 +22,8 @@ services:
             MYSQL_USER: 'testuser'
             MYSQL_PASSWORD: 'testpassword'
             MYSQL_DATABASE: 'testdb'
+        networks:
+            - app-network
 
     phpmyadmin:
         image: phpmyadmin
@@ -30,5 +34,11 @@ services:
           - PMA_ARBITRARY=1
         links:
           - 'mariadb'
+        networks:
+            - app-network
+networks:
+    app-network:
+        driver: bridge
 volumes:
     mariadb:
+    DocumentRoot:

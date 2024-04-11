@@ -549,7 +549,7 @@ docker build -t frontend-react-image .
 
 Run le container : 
 ```bash
-docker run -it --rm --name frontend --network my-network -v "/${PWD}:/app" -v /app/node_modules -p 3001:3000 -e CHOKIDAR_USEPOLLING=true frontend-react-image
+docker run -it --rm --name frontend --network my-network -v "/${PWD}:/app" -v /app/node_modules -p 3001:3000 frontend-react-image
 ```
 
 ### Network 
@@ -596,14 +596,15 @@ Ensuite il faut créer un fichier docker-compose.yml à la racine du projet (`co
 version: '3'
 services:
     php-apache:
-        build:
-            context: ./php-apache
+        image: php:7.2.1-apache
         ports:
             -  80:80
         volumes:
-            - ./DocumentRoot:/var/www/html
+            - DocumentRoot:/var/www/html
         links:
             - 'mariadb'
+        networks:
+            - app-network
 ```
 
 #### 1.3 Database
@@ -621,6 +622,8 @@ mariadb:
         MYSQL_USER: 'testuser'
         MYSQL_PASSWORD: 'testpassword'
         MYSQL_DATABASE: 'testdb'
+    networks:
+        - app-network
 ```
 
 #### 1.4 PhpMyAdmin
@@ -634,6 +637,8 @@ phpmyadmin:
       - 8080:80
     environment:
       - PMA_ARBITRARY=1
+    networks:
+        - app-network
 ```
 
 
@@ -643,6 +648,16 @@ Ajouter la partie des volumes au docker-compose.yml :
 ```dockerfile
 volumes:
     mariadb:
+    DocumentRoot:
+```
+
+#### 1.6 Network
+
+Ajouter la partie des volumes au docker-compose.yml : 
+```dockerfile
+networks:
+    app-network:
+        driver: bridge
 ```
 
 Le fichier final doit ressembler à ça : 
@@ -657,6 +672,8 @@ services:
             - ./DocumentRoot:/var/www/html:z
         links:
             - 'mariadb'
+        networks:
+            - app-network
 
     mariadb:
         image: mariadb:10.1
@@ -669,6 +686,8 @@ services:
             MYSQL_USER: 'testuser'
             MYSQL_PASSWORD: 'testpassword'
             MYSQL_DATABASE: 'testdb'
+        networks:
+            - app-network
 
     phpmyadmin:
         image: phpmyadmin
@@ -679,6 +698,11 @@ services:
           - PMA_ARBITRARY=1
         links:
           - 'mariadb'
+        networks:
+            - app-network
+networks:
+    app-network:
+        driver: bridge
 volumes:
     mariadb:
 
@@ -694,3 +718,218 @@ Une fois l'application build, accèder à l'adresse suivante pour voir le fichie
 http://localhost
 
 ### 2. MERN
+
+#### 2.1 Configuration de l'environnement 
+
+Avant tout, créer le dossier de l'application, ainsi qu'un sous dossier pour le serveur : 
+```bash 
+mkdir -p compose-mern
+cd compose-mern
+mkdir -p server
+```
+
+#### 2.2 ReactJs (frontend)
+
+Depuis la racine du dossier de l'application (`compose-mern`), créer un client React Js :
+```bash 
+npx create-react-app frontend
+```
+
+Dans le dossier `frontend`, créer un Dockerfile contenant les lignes suivantes : 
+```Dockerfile
+# Dockerfile
+# Layer 1: Image node 
+FROM node:17-alpine 
+
+# Layer 2: Définir le dossier route du container
+WORKDIR /app 
+
+# Layer 3: copy les package.json dans le dossier du container
+COPY package.json . 
+
+# Layer 4: Installation des dépendances
+RUN npm install 
+
+# Layer 5: Copier tous les fichiers depuis le dossier actuel vers le container
+COPY . . 
+
+# Layer 6: Définition du port
+EXPOSE 3000 
+
+# Layer 7: Run npm start
+CMD ["npm", "start"]
+```
+
+Ajouter un .dockerignore : 
+```dockerfile
+node_modules
+Dockerfile
+.git
+.gitignore
+.dockerignore
+```
+
+Depuis le dossier `frontend` build l'image du projet : 
+```bash 
+docker build -t frontend-react-image .
+```
+
+Run le container : 
+```bash
+docker run -it --rm -p 3000:3000 --name frontend frontend-react-image
+```
+
+L'app est donc dispo depuis le port 3000 : http://localhost:3000/
+
+#### 2.3 Node Express (backend)
+
+Se rendre dans le dossier server, et run la commande suivante : 
+```bash 
+npm init --y
+```
+Cette commande va permettre d'initialiser l'app et créer un package.json
+
+Installer express dans `server`: 
+```bash 
+npm install express --save
+```
+
+Créer un fichier nommé : server.js (ce fichier contiendra le code node)  
+
+Dans le fichier server.js ajouter ce code : 
+```js 
+const express = require('express');
+
+//Create an app
+const app = express();
+app.get('/', (req, res) => {
+    res.send('Hello world\n');
+});
+
+//Listen port
+const PORT = 8080;
+app.listen(PORT);
+console.log(`Running on port ${PORT}`);
+```
+
+Run l'app pour s'assurer qu'elle est fonctionnelle : 
+```bash
+node server.js
+```
+
+L'app est disponible depuis : http://localhost:8080
+
+#### 2.3.1 Configuration de Dockerfile / .dockerignore
+
+Créer un fichier Dockerfile à la racine de `server` et copier dedans le Dockerfile officiel du site Nodejs : 
+```Dockerfile 
+# Dockerfile
+# Layer 1: Image node:10
+FROM node:10
+
+# Layer 2: Création du dossier de l'app
+WORKDIR /usr/src/app
+
+# Layer 3: Installer les dépendances.
+COPY package*.json ./
+RUN npm install
+
+# Layer 4: Copier le contenu de l'app
+COPY . .
+
+# Layer 5: Port à écouter par le container
+EXPOSE 8080
+
+# Layer 6: Run de la commande node server.js
+CMD [ "node", "server.js" ]
+```
+
+Créer également un .dockerignore afin d'éviter la copie des node_modules sur le container : 
+```dockerfile
+# .dockerignore:
+node_modules
+```
+#### 2.3.2 Monter le container
+
+Build l'image : 
+```bash
+docker build -t backend-node-image .
+```
+
+Puis run le container : 
+```bash 
+docker run -it --rm --name backend -p 8080:8080 backend-node-image
+```
+
+### 2.4 docker-compose 
+
+Depuis la racine du projet (`compose-mern`) créer un document docker-compose.yml  
+Ajouter les lignes suivantes : 
+```dockerfile
+version: '3'
+
+services: 
+    frontend:
+        container_name: frontend 
+        build: 
+            context: frontend/
+        image: frontend-image
+        ports:
+            - 3000:3000
+        command: npm start
+        volumes:
+            - ./frontend/:/usr/app
+            - /usr/app/node_modules
+        depends_on:
+            - server 
+    server:
+        container_name: server
+        build:
+            context: server/
+        image: backend-image 
+        ports:
+            - 5000:5000
+        volumes:
+            - ./server/:/usr/src/app
+            - /usr/src/app/node_modules  
+        depends_on:
+            - mongo
+        environment:
+            - NODE_ENV=development
+        networks:
+            - app-network
+    mongo:
+        image: mongo
+        volumes:
+            - data-volume:/data/db
+        ports:
+            - 3500:3500
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes:
+    data-volume:
+    node_modules:
+```
+
+Depuis la racine de l'app, build l'intégralité de l'app : 
+```bash
+docker-compose build
+```
+
+Enfin, start les container via : 
+```yaml
+docker-compose up
+```
+
+Pour stopper les container : 
+```bash
+docker-compose stop
+```
+
+Les apps sont disponibles aux url suivantes : 
+Frontend : 
