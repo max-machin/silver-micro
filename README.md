@@ -932,4 +932,6 @@ docker-compose stop
 ```
 
 Les apps sont disponibles aux url suivantes : 
-Frontend : 
+Frontend : http://localhost:3000
+Backend : http://localhost:5000
+DB : http://localhost:3500
